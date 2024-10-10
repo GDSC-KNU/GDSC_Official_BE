@@ -17,10 +17,10 @@ public class PostResponse {
     @Getter
     @Builder
     @AllArgsConstructor
-    public static class Main implements Serializable{
+    public static class Main implements Serializable {
         private Long id;
         private String title;
-        private String summary;
+        private String subTitle;
         private String thumbnailUrl;
         private String category;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -29,20 +29,81 @@ public class PostResponse {
         private LocalDateTime createAt;
         private int likeCount;
         private int commentCount;
+        private int sharedCount;
 
         public static Main from(Post post) {
-            int length = Math.min(post.getContent().length(), 20);
             return Main.builder()
                     .id(post.getId())
                     .title(post.getTitle())
-                    .summary(post.getContent().substring(0,length))
+                    .subTitle(post.getSubTitle())
                     .thumbnailUrl(post.getThumbnailUrl())
                     .category(post.getCategory().name())
                     .createAt(post.getPublishedAt())
                     .likeCount(post.getLikeCount())
-                    .commentCount(post.getCommentCount())
+                    .commentCount(post.getCommentList().size())
+                    .sharedCount(post.getSharedCount())
                     .build();
 
+        }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class Detail implements Serializable {
+        private Long id;
+        private String title;
+        private String subTitle;
+        private String thumbnailUrl;
+        private String category;
+        private String content;
+        private String authorName;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+        private LocalDateTime createAt;
+        private int likeCount;
+        private int commentCount;
+        private int sharedCount;
+
+        public static Detail from(Post post) {
+            return Detail.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .subTitle(post.getSubTitle())
+                    .thumbnailUrl(post.getThumbnailUrl())
+                    .category(post.getCategory().name())
+                    .content(post.getContent())
+                    .authorName(post.getMember().getName())
+                    .createAt(post.getPublishedAt())
+                    .likeCount(post.getLikeCount())
+                    .commentCount(post.getCommentList().size())
+                    .sharedCount(post.getSharedCount())
+                    .build();
+
+        }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class Temp implements Serializable {
+        private Long id;
+        private String title;
+        private String summary;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+        private LocalDateTime createAt;
+
+        public static Temp from(Post post) {
+            int length = Math.min(post.getContent().length(), 20);
+            return Temp.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .summary(post.getContent().substring(0, length))
+                    .createAt(post.getPublishedAt())
+                    .build();
         }
     }
 }
